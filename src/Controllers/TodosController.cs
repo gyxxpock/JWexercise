@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using Microsoft.Extensions;
+using Exercise.Models;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 
 namespace Exercise.Todos.Controllers
 {
@@ -11,23 +14,18 @@ namespace Exercise.Todos.Controllers
         [HttpGet]
         public IActionResult GetList()
         {
-            string j = "[";
-
-            string[] l = System.IO.File.ReadAllLines("Todos.txt");
-            for (int i = 0; i < l.Length; i++)
+            List<ToDo> ToDos = new System.Collections.Generic.List<ToDo>();
+            System.IO.StreamReader Database = new System.IO.StreamReader("Todos.txt");
+            string line;
+            while ((line = Database.ReadLine()) != null)
             {
-                if (i > 0)
-                {
-                    j = j + ",";
-                }
-
-                var s = l[i].Split(",");
-                j = j + "{\"i\": " + s[0] + ", \"text\": \"" + ToTitleCase(s[1]) + "\", \"isDone\": " + s[2] + "}";
+                // Get line
+                ToDos.Add(new ToDo(line.Split(",")[0], line.Split(",")[1], line.Split(",")[2] == "true"));
             }
 
-            j = j + "]";
-
-            return Ok(j);
+            Database.Close();
+            var json = new JavaScriptSerializer().Serialize(ToDos);
+            return Ok();
         }
 
         public static string ToTitleCase(string todo)

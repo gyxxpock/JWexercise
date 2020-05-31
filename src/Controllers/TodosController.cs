@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using Microsoft.Extensions;
 using Exercise.Models;
-using System.Collections.Generic;
+using Exercise.Controllers;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
 
 namespace Exercise.Todos.Controllers
 {
@@ -21,63 +17,39 @@ namespace Exercise.Todos.Controllers
         [HttpGet]
         public IActionResult GetList()
         {
-            List<ToDo> ToDos = new System.Collections.Generic.List<ToDo>();
-            System.IO.StreamReader Database = new System.IO.StreamReader("Todos.txt");
-            string line;
-            while ((line = Database.ReadLine()) != null)
-            {
-                // Get line
-                ToDos.Add(new ToDo(line.Split(",")[0], ToTitleCase(line.Split(",")[1]), line.Split(",")[2] == "true"));
-            }
-
-            Database.Close();
-            
-            return Ok(JsonConvert.SerializeObject(ToDos, Formatting.Indented));
+            return Ok(JsonConvert.SerializeObject(DatabaseController.GetAll(), Formatting.Indented));
         }
         
         [HttpGet]
-        [Route("{id:int}")]
-        public IActionResult GetTodo(int id)
+        [Route("{id}")]
+        public IActionResult GetTodo(string id)
         {
-            return Ok(id);
+            ToDo todo = DatabaseController.GetByID(id);
+            if (todo == null)
+            {
+                return NotFound(id);
+            }
+            return Ok(JsonConvert.SerializeObject(todo, Formatting.Indented));
         }
 
-        public static string ToTitleCase(string todo)
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult DeleteTodo(string id)
         {
-            var fs = todo.IndexOf(' ', 1);
-            if(fs == -1)
-            {
-                if (todo.Length > 1)
-                {
-                    if(todo[0] == ' ')
-                    {
-                        return String.Concat(todo[0], Char.ToUpper(todo[1]), todo.Substring(2));
-                    } else
-                    {
-                        return String.Concat(Char.ToUpper(todo[0]), todo.Substring(1));
-                    }
-                }
-                else
-                {
-                    return todo.ToUpper();
-                }
-            } else
-            {
-                if(fs > 1)
-                {
-                    if (todo[0] == ' ')
-                    {
-                        return String.Concat(todo[0], Char.ToUpper(todo[1]), todo.Substring(2, fs-2)) + ToTitleCase(todo.Substring(fs));
-                    }
-                    else
-                    {
-                        return String.Concat(Char.ToUpper(todo[0]), todo[1..fs]) + ToTitleCase(todo.Substring(fs));
-                    }
-                } else
-                {
-                    return " " + ToTitleCase(todo.Substring(fs));
-                }
-            }
+            DatabaseController.Delete(id);
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult CreateTodo(ToDo todo)
+        {
+            return Ok(DatabaseController.Insert(todo.Description));
+        }
+        [HttpPut]
+        public IActionResult UpdateTodo(ToDo todo)
+        {
+            DatabaseController.Update(todo);
+            return Ok(todo.ID);
         }
     }
 }

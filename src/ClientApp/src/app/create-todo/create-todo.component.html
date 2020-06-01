@@ -1,0 +1,9 @@
+<mat-dialog-content>
+    <mat-form-field>
+        <mat-label>What are you going to do?</mat-label>
+        <input matInput [(ngModel)]="description">
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color="primary" cdkFocusInitial [mat-dialog-close]="description">Let's plan it</button>
+</mat-dialog-actions>

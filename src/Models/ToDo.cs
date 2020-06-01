@@ -6,16 +6,20 @@ namespace Exercise.Models
     {
         public string ID { get; set; }
         public string Description { get; set; }
+        public string DueDate { get; set; }
+        public string Notes { get; set; }
         public Boolean IsDone { get; set; }
-        public ToDo(string ID, string Description, Boolean IsDone)
+        public ToDo(string ID, string Description, string DueDate, string Notes, Boolean IsDone)
         {
             this.ID = ID;
             this.Description = ToTitleCase(Description);
+            this.DueDate = DueDate;
+            this.Notes = Notes;
             this.IsDone = IsDone;
         }
         public override string ToString()
         {
-            return this.ID + "," + this.Description + "," + this.IsDone;
+            return this.ID + "|" + this.Description + "|" + this.DueDate + "|" + this.Notes + "|" + this.IsDone;
         }
         public static string ToTitleCase(string todo)
         {

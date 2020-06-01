@@ -14,9 +14,9 @@ namespace Exercise.Controllers
             ToDo todo = null;
             foreach (string line in File.ReadLines(DatabaseFilePath))
             {
-                if (line.Split(",")[0].Equals(ID))
+                if (line.Split("|")[0].Equals(ID))
                 {
-                    todo = new ToDo(line.Split(",")[0], line.Split(",")[1], line.Split(",")[2] == "true");
+                    todo = new ToDo(line.Split("|")[0], line.Split("|")[1], line.Split("|")[2], line.Split("|")[3], line.Split("|")[4] == "true");
                 }
             }
             return todo;
@@ -27,7 +27,7 @@ namespace Exercise.Controllers
             List<ToDo> todos = new List<ToDo>();
             foreach (string line in File.ReadLines(DatabaseFilePath))
             {
-                todos.Add(new ToDo(line.Split(",")[0], line.Split(",")[1], line.Split(",")[2] == "true"));
+                todos.Add(new ToDo(line.Split("|")[0], line.Split("|")[1], line.Split("|")[2], line.Split("|")[3], line.Split("|")[4] == "true"));
             }
             return todos;
         }
@@ -35,7 +35,7 @@ namespace Exercise.Controllers
         {
             // Generate a new ID and Insert as a new line the received ToDo object
             string ID = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-            ToDo todo = new ToDo(ID, description, false);
+            ToDo todo = new ToDo(ID, description, "", "", false);
             StreamWriter tmpFile = File.AppendText(DatabaseFilePath);
             tmpFile.WriteLine(todo.ToString());
             tmpFile.Close();
@@ -49,7 +49,7 @@ namespace Exercise.Controllers
             StreamWriter tmpFile = new StreamWriter(tmpFilePath);
             foreach (string line in File.ReadLines(DatabaseFilePath))
             {
-                if (!line.Split(",")[0].Equals(ID))
+                if (!line.Split("|")[0].Equals(ID))
                 {
                     //Write line to tmpfile
                     tmpFile.WriteLine(line);
@@ -67,7 +67,7 @@ namespace Exercise.Controllers
             StreamWriter tmpFile = new StreamWriter(tmpFilePath);
             foreach (string line in File.ReadLines(DatabaseFilePath))
             {
-                if (!line.Split(",")[0].Equals(todo.ID))
+                if (!line.Split("|")[0].Equals(todo.ID))
                 {
                     //Write line to tmpfile
                     tmpFile.WriteLine(line);

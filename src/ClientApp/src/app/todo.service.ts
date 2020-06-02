@@ -18,7 +18,6 @@ export class TodoService {
   }
 
   getAll(): Observable<any> {
-    console.log("Getting all");
     return this.http
       .get('api/todos')
       .pipe(map((response: Response) => response))
@@ -28,7 +27,7 @@ export class TodoService {
   getByID(ID: string) {
     return this.http
       .get('api/todos/' + ID)
-      .pipe(map((response: Response) => response))
+      .pipe(map((response: Todo) => response ))
       .pipe(catchError(this.handleError));
   }
 
@@ -40,7 +39,7 @@ export class TodoService {
   }
 
   create(description: string) {
-    let newTodo: Todo = { ID: "", Description: description, DueDate: "", Notes: "", IsDone: false };
+    const newTodo: Todo = { ID: '', Description: description, DueDate: '', Notes: '', IsDone: false };
     return this.http
       .post('api/todos', newTodo)
       .pipe(map((response: Response) => response))

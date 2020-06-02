@@ -23,36 +23,41 @@ export class AppComponent implements OnInit {
   }
 
   createTodo(): void {
-    this.createToDoDialogRef = this.dialog.open(CreateTodoComponent,
-      {
-        width: '500px',
-      });
+    this.createToDoDialogRef = this.dialog.open(CreateTodoComponent);
 
     this.createToDoDialogRef.afterClosed().subscribe(description => {
       if (description !== undefined) {
-        this.todoService.create(description).subscribe(result => {this.loadToDos();});
+        this.todoService.create(description).subscribe(result => { this.loadToDos(); });
       }
     });
   }
 
   updateTodo(ID: string): void {
-    this.updateToDoDialogRef = this.dialog.open(UpdateTodoComponent, {data: {ID: ID}});
-
-    this.updateToDoDialogRef.afterClosed().subscribe(result => {
-      console.log('The update dialog was closed');
-      this.loadToDos();
+    this.todoService.getByID(ID).subscribe(todo => {
+      this.updateToDoDialogRef = this.dialog.open(UpdateTodoComponent, { data: todo });
+      this.updateToDoDialogRef.afterClosed().subscribe(updatedTodo => {
+        if (updatedTodo !== undefined) {
+          this.todoService.update(updatedTodo).subscribe(response => {
+            this.loadToDos();
+          });
+        }
+      });
     });
   }
 
   deleteToDo(id: string): void {
-    console.log("Delete");
-    console.log(id);
+    this.todoService.delete(id).subscribe(description => {
+      this.loadToDos();
+    });
   }
 
   completeTodo(ID: string, complete: boolean): void {
-    console.log("Complete");
-    console.log(ID);
-    console.log(complete);
+    this.todoService.getByID(ID).subscribe(todo => {
+      todo.IsDone = complete;
+      this.todoService.update(todo).subscribe(response => {
+        this.loadToDos();
+      });
+    });
   }
 
   loadToDos(): void {

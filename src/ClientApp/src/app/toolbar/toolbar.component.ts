@@ -9,9 +9,9 @@ export class ToolbarComponent implements OnInit {
 
   constructor() { }
 
+  title = 'ToDo App';
+
   ngOnInit(): void {
   }
-
-  title = "ToDo App";
 
 }

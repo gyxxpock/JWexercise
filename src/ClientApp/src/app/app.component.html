@@ -4,7 +4,7 @@
    <mat-list>
       <mat-list-item *ngFor="let todo of todos">
          <p mat-line>
-            <mat-checkbox (change)="completeTodo(todo.ID, $event.checked)">{{todo.Description}}</mat-checkbox>
+            <mat-checkbox [(ngModel)]="todo.IsDone" (change)="completeTodo(todo.ID, $event.checked)">{{todo.Description}}</mat-checkbox>
          </p>
          <button mat-icon-button (click)="updateTodo(todo.ID)">
             <mat-icon>edit</mat-icon>

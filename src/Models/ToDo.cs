@@ -19,7 +19,7 @@ namespace Exercise.Models
         }
         public override string ToString()
         {
-            return this.ID + "|" + this.Description + "|" + this.DueDate + "|" + this.Notes + "|" + this.IsDone;
+            return this.ID + "|" + this.Description + "|" + this.DueDate + "|" + this.Notes + "|" + this.IsDone.ToString().ToLower();
         }
         public static string ToTitleCase(string todo)
         {

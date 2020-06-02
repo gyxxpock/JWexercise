@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using Microsoft.Extensions;
 using Exercise.Models;
-using System.Collections.Generic;
-using System.Web.Script.Serialization;
+using Exercise.Controllers;
+using Newtonsoft.Json;
 
 namespace Exercise.Todos.Controllers
 {
+    // Routes get api/todos
+    // Routes get api/todos/:id
+    // Routes delete api/todo/:id
+    // Routes post api/todos
+    // Routes put api/todos/:id
     [Route("api/[controller]")]
     [ApiController]
     public class TodosController : ControllerBase
@@ -14,53 +17,39 @@ namespace Exercise.Todos.Controllers
         [HttpGet]
         public IActionResult GetList()
         {
-            List<ToDo> ToDos = new System.Collections.Generic.List<ToDo>();
-            System.IO.StreamReader Database = new System.IO.StreamReader("Todos.txt");
-            string line;
-            while ((line = Database.ReadLine()) != null)
+            return Ok(JsonConvert.SerializeObject(DatabaseController.GetAll(), Formatting.Indented));
+        }
+        
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult GetTodo(string id)
+        {
+            ToDo todo = DatabaseController.GetByID(id);
+            if (todo == null)
             {
-                // Get line
-                ToDos.Add(new ToDo(line.Split(",")[0], line.Split(",")[1], line.Split(",")[2] == "true"));
+                return NotFound(id);
             }
+            return Ok(JsonConvert.SerializeObject(todo, Formatting.Indented));
+        }
 
-            Database.Close();
-            var json = new JavaScriptSerializer().Serialize(ToDos);
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult DeleteTodo(string id)
+        {
+            DatabaseController.Delete(id);
             return Ok();
         }
 
-        public static string ToTitleCase(string todo)
+        [HttpPost]
+        public IActionResult CreateTodo(ToDo todo)
         {
-            var fs = todo.IndexOf(' ', 1);
-
-            if (todo[0] == ' ')
-            {
-                if (todo.Length > 1)
-                {
-                    if (fs != -1)
-                    {
-                        return todo[0].ToString() + Char.ToUpper(todo[1]) + todo.Substring(2, fs - 2) + ToTitleCase(todo.Substring(fs));
-                    }
-                    else
-                    {
-                        return todo[0].ToString() + Char.ToUpper(todo[1]) + todo.Substring(2);
-                    }
-                }
-                else
-                {
-                    return todo.ToUpper();
-                }
-            }
-            else
-            {
-                if (fs == -1)
-                {
-                    return Char.ToUpper(todo[0]) + todo.Substring(1);
-                }
-                else
-                {
-                    return Char.ToUpper(todo[0]) + todo.Substring(1, fs - 1) + ToTitleCase(todo.Substring(fs));
-                }
-            }
+            return Ok(DatabaseController.Insert(todo.Description));
+        }
+        [HttpPut]
+        public IActionResult UpdateTodo(ToDo todo)
+        {
+            DatabaseController.Update(todo);
+            return Ok(todo.ID);
         }
     }
 }
